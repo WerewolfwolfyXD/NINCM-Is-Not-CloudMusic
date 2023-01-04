@@ -1,0 +1,6 @@
+pygame
+keyboard
+requests
+requests-file
+requests-futures
+requests-ntlm
