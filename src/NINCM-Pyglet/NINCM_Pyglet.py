@@ -29,7 +29,9 @@ class n_api:
     wyy_headframe = "http://p1.music.126.net/_f_ggnXfNN-PndOZnahjng==/"
     wyy_outer = "http://music.163.com/song/media/outer/url?id={}.mp3"
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36"}
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36",
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:50.0) Gecko/20100101 Firefox/50.0"
+    }
     api_songsearch = ""
     playing_song_j = None
     songs = {}
@@ -87,7 +89,7 @@ def player_play():
         else:
             resources_player.play()
     except Exception:
-        print("ERROR")
+        print("资源加载错误或者事付费曲")
 
 
 def player_resume():
@@ -101,53 +103,41 @@ def player_stop():
     try:
         resources_player.delete()
     except Exception:
-        print("ERROR")
+        print("无法释放资源")
 
 
 def on_press():
     start_input()
 
 
-def getsong_info(playsongj):
+def getsong_info(songs):
     try:
-        songs = playsongj
-        print("\n")
         print("歌曲名: " + songs["name"] + " | 歌曲ID: " + songs["id"].__str__())
         # 歌曲详情 & 专辑详情:
         req = n_api.api_netease_url + "song/detail/?id=" + songs["id"].__str__() + "&ids=%5B" + songs[
             "id"].__str__() + "%5D"
         songinfo_j = json.loads(send_n_back(req))["songs"][0]
-        print(songinfo_j)
         print("Disc: " + songinfo_j["disc"].__str__() + " | No. " + songinfo_j["no"].__str__())
-        print("星标音乐: " + songinfo_j["starred"].__str__() + " | 热门度: " + songinfo_j[
-            "popularity"].__str__() + " | 分数(和热门度差不了多少意思): " + songinfo_j["score"].__str__())
-        print("星标数量: " + songinfo_j["starredNum"].__str__() + " | 播放次数: " + songinfo_j[
-            "playedNum"].__str__() + " | 日播放次数: " + songinfo_j["dayPlays"].__str__() + " | 播放时长: " +
-              songinfo_j[
-                  "hearTime"].__str__())
-        print("歌曲译名: " + songinfo_j["transName"].__str__() + " | 歌曲别名: " + songinfo_j["alias"])
+        print("星标音乐: " + songinfo_j["starred"].__str__() + " | 热门度: " + songinfo_j["popularity"].__str__()[:-2].join("%") + " | 分数(和热门度差不了多少意思): " + songinfo_j["score"].__str__())
+        print("星标数量: " + songinfo_j["starredNum"].__str__() + " | 播放次数: " + songinfo_j["playedNum"].__str__() + " | 日播放次数: " + songinfo_j["dayPlays"].__str__() + " | 播放时长: " +songinfo_j["hearTime"].__str__())
+        print("歌曲译名: " + songinfo_j["transName"].__str__() + " | 歌曲别名: " + songinfo_j["alias"].__str__().replace("[]", "无"))
         for artists in range(0, len(songs["artists"])):
             artist_ = songs["artists"][artists]
-            print("参演艺术家 (" + (artists + 1).__str__() + ") : " + artist_[
-                "name"].__str__() + " | ID: " + artist_["id"].__str__() + " | 个人头像: " +
-                  artist_["img1v1Url"] + " | 粉丝团: " + artist_["fansGroup"].__str__().replace("None",
-                                                                                                "无") + " | 歌手别名: " +
-                  artist_["alias"].__str__())
+            print("参演艺术家 (" + (artists + 1).__str__() + ") : " + artist_["name"].__str__() + " | ID: " + artist_["id"].__str__() + " | 个人头像: " + artist_["img1v1Url"] + " | 粉丝团: " + artist_["fansGroup"].__str__().replace("None","无") + " | 歌手别名: " + artist_["alias"].__str__().replace("[]", "无"))
         album__ = songinfo_j["album"]
         album_ = songs["album"]
-        print("歌曲专辑: " + album_["name"] + " | 专辑ID: " + album_["id"].__str__() + " | 发行时间: " + timeStampMS(
-            album_["publishTime"]).__str__())
-        print(
-            "专辑图片: " + album__["picUrl"].__str__() + " | 专辑类型: " + album__["type"] + " | 发行公司/厂牌: " +
-            album__[
-                "company"].__str__().replace("None", "无") + " (" + album__["companyId"].__str__() + ")")
-        print("专辑类型: " + album__["subType"].__str__() + " | 是否售卖(打折): " + album__["onSale"].__str__().replace(
-            "False", "否").replace("True", "是") + " | 杜比音频: " + album__["dolbyMark"].__str__().replace("0",
-                                                                                                            "不支持").replace(
-            "1", "支持"))
-        print("\n")
+        print("歌曲专辑: " + album_["name"] + " | 专辑ID: " + album_["id"].__str__() + " | 发行时间: " + timeStampMS(album_["publishTime"]).__str__())
+        print("专辑图片: " + album__["picUrl"].__str__() + " | 专辑类型: " + album__["type"] + " | 发行公司/厂牌: " +album__["company"].__str__().replace("None", "无") + " (" + album__["companyId"].__str__() + ")")
+        print("专辑类型: " + album__["subType"].__str__() + " | 是否售卖(打折): " + album__["onSale"].__str__().replace("False", "否").replace("True", "是") + " | 杜比音频: " + album__["dolbyMark"].__str__().replace("0","不支持").replace("1", "支持"))
     except Exception:
-        pass
+        print("获取详情信息失败")
+
+def lyrisFormater(songs):
+    try:
+        # https://music.163.com/api/song/lyric?id={歌曲ID}&lv=1&kv=1&tv=-1
+        req = n_api.api_netease_url + ""
+        songs
+    except Exception: pass
 
 
 def start_input():
@@ -268,18 +258,6 @@ def start_input():
                             except Exception:
                                 print("ERROR: \ntmp:" + tmp.__str__() + "\nvar_t:" + var_t.__str__())
                 break
-        else:
-            if '@' in var_s:
-                j = inp.split()
-                if "@search" in j:
-                    n_api.api_songsearch = search_song(j[1])
-                if "@proxy" in j:
-                    if "set" == j[1]:
-                        if not None == j[2] or not "" == j[2]:
-                            n_api.api_url = j[2]
-                    if "show" == j[1]:
-                        print(n_api.api_url)
-        break
 
 
 def waitfor():
