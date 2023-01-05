@@ -3,10 +3,7 @@ import threading
 import time
 import json
 import pyglet
-import keyboard
 import requests
-from pyglet.gl import *
-from pyglet.media import load
 
 # 别问，实在太害怕代码档掉采用的这么多try except QWQ
 
@@ -56,13 +53,29 @@ def release_temp():
     except Exception:
         pass
 
-
-def search_song(s_name):
-    apihead = n_api.api_url + "search?keywords="
-    var = apihead + s_name
+def searcher(s_name, s_type):
+    if s_type == "song":
+        # apihead = n_api.api_url + "search?keywords="
+        # var = apihead + s_name
+        var = "http://music.163.com/api/search/get/web?csrf_token=hlpretag=&hlposttag=&s=" + s_name + "&type=1&offset=0&total=true&limit=20"
+    elif s_type == "album":
+        var = "http://music.163.com/api/search/get/web?csrf_token=hlpretag=&hlposttag=&s=" + s_name + "&type=10&offset=0&total=true&limit=20"
+    elif s_type == "singer":
+        var = "http://music.163.com/api/search/get/web?csrf_token=hlpretag=&hlposttag=&s=" + s_name + "&type=100&offset=0&total=true&limit=20"
+    elif s_type == "songlist":
+        var = "http://music.163.com/api/search/get/web?csrf_token=hlpretag=&hlposttag=&s=" + s_name + "&type=1000&offset=0&total=true&limit=20"
+    elif s_type == "user":
+        var = "http://music.163.com/api/search/get/web?csrf_token=hlpretag=&hlposttag=&s=" + s_name + "&type=1002&offset=0&total=true&limit=20"
+    elif s_type == "mv":
+        var = "http://music.163.com/api/search/get/web?csrf_token=hlpretag=&hlposttag=&s=" + s_name + "&type=1004&offset=0&total=true&limit=20"
+    elif s_type == "lyric":
+        var = "http://music.163.com/api/search/get/web?csrf_token=hlpretag=&hlposttag=&s=" + s_name + "&type=1006&offset=0&total=true&limit=20"
+    elif s_type == "djradio":
+        var = "http://music.163.com/api/search/get/web?csrf_token=hlpretag=&hlposttag=&s=" + s_name + "&type=1009&offset=0&total=true&limit=20"
+    else:
+        print("错误的搜索类型")
     req = requests.get(url=var, headers=n_api.headers)
     return req.text.__str__()
-
 
 def send_n_back(URL):
     return requests.get(url=URL, headers=n_api.headers).text.__str__()
@@ -83,7 +96,7 @@ def player_play():
         songid = n_api.playing_song_j["id"].__str__()
         if not os.path.exists(n_api.temp_loca + "/.temp" + songid + ".mp3"):
             downloader(songid)
-            resources_player.queue(load(n_api.temp_loca + "/.temp" + songid + ".mp3"))
+            resources_player.queue(pyglet.media.load(n_api.temp_loca + "/.temp" + songid + ".mp3"))
             # resources_player.queue(load(n_api.wyy_outer.format(songid)))
             resources_player.play()
         else:
@@ -139,6 +152,14 @@ def lyrisFormater(songs):
         songs
     except Exception: pass
 
+def aa(var_t):
+    whatisearched = ""
+    if len(var_t) > 2:
+        for k in range(2, len(var_t)):
+            whatisearched += " " + var_t[k]
+    else:
+        whatisearched = var_t[1]
+    return whatisearched
 
 def start_input():
     while 1:
@@ -169,16 +190,32 @@ def start_input():
                     if ":quit" in var_t:
                         raise SystemExit
                     if ":search" in var_t:
-                        if "byname" == var_t[1]:
-                            whatisearched = ""
-                            if len(var_t) > 2:
-                                for k in range(2, len(var_t)):
-                                    whatisearched += " " + var_t[k]
-                            else:
-                                whatisearched = var_t[1]
-                            n_api.api_songsearch = json.loads(search_song(whatisearched))
+                        if "songs" == var_t[1] or "song" == var_t[1] or "sng" == var_t[1]:
+                            n_api.api_songsearch = json.loads(searcher(aa(var_t), "song"))
                             n_api.songs = n_api.api_songsearch["result"]["songs"]
                             # n_api.api_songsearch = json.loads(open('shit.json', 'r').read())
+                        if "albums" == var_t[1] or "album" == var_t[1] or "abm" == var_t[1]:
+                            n_api.api_songsearch = json.loads(searcher(aa(var_t), "album"))
+                            print(searcher(aa(var_t), "album"))
+                        if "singers" == var_t[1] or "singer" == var_t[1] or "sgr" == var_t[1]:
+                            n_api.api_songsearch = json.loads(searcher(aa(var_t), "singer"))
+                            print(n_api.api_songsearch)
+                        if "songlists" == var_t[1] or "songlist" == var_t[1] or "slt" == var_t[1]:
+                            n_api.api_songsearch = json.loads(searcher(aa(var_t), "songlist"))
+                            print(n_api.api_songsearch)
+                        if "users" == var_t[1] or "user" == var_t[1] or "usr" == var_t[1]:
+                            n_api.api_songsearch = json.loads(searcher(aa(var_t), "user"))
+                            print(n_api.api_songsearch)
+                        if "mvs" == var_t[1] or "mv" == var_t[1]:
+                            n_api.api_songsearch = json.loads(searcher(aa(var_t), "mv"))
+                            print(n_api.api_songsearch)
+                        if "lyrics" == var_t[1] or "lyric" == var_t[1] or "lyc" == var_t[1]:
+                            n_api.api_songsearch = json.loads(searcher(aa(var_t), "lyric"))
+                            print(n_api.api_songsearch)
+                        if "djradios" == var_t[1] or "djradio" == var_t[1] or "rdo" == var_t[1] or "radio" == var_t[1] or "radios" == var_t[1]:
+                            n_api.api_songsearch = json.loads(searcher(aa(var_t), "djradio"))
+                            print(n_api.api_songsearch)
+
                         if "list" == var_t[1]:
                             if len(var_t) > 2:
                                 if "o" == var_t[2] or "original" == var_t[2]:
@@ -253,7 +290,7 @@ def start_input():
                                 for i in range(0, len(tmp)):
                                     song = n_api.songs[int(tmp[i]) - 1]["id"].__str__()
                                     downloader(song)
-                                    resources_player.queue(load(n_api.temp_loca + "/.temp" + song + ".mp3"))
+                                    resources_player.queue(pyglet.media.load(n_api.temp_loca + "/.temp" + song + ".mp3"))
                                 print("% next posted")
                             except Exception:
                                 print("ERROR: \ntmp:" + tmp.__str__() + "\nvar_t:" + var_t.__str__())
