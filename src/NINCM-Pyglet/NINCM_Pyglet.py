@@ -306,9 +306,12 @@ def waitfor():
 
 
 if __name__ == "__main__":
-    aaff = threading.Thread(target=waitfor)
-    aaff.start()
-    pyglet.app.run()
+    try:
+        aaff = threading.Thread(target=waitfor)
+        aaff.start()
+        pyglet.app.run()
+    except Exception:
+        print("无法启动服务")
 
     # thr_input = threading.Thread(target=on_press)
     # thr_input.start()
