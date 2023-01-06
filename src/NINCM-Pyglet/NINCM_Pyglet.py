@@ -21,7 +21,7 @@ resources_player = pyglet.media.Player()
 
 class n_api:
     temp_loca = os.getcwd() + "/"
-    api_url = "http://cloud-music.pl-fe.cn/"
+    api_url = "http://cloud-music.pl-fe.cn/" # 不敢用第三方API力qwq
     api_netease_url = "http://music.163.com/api/"
     wyy_headframe = "http://p1.music.126.net/_f_ggnXfNN-PndOZnahjng==/"
     wyy_outer = "http://music.163.com/song/media/outer/url?id={}.mp3"
@@ -147,7 +147,6 @@ def getsong_info(songs):
 
 def lyrisFormater(songs):
     try:
-        # https://music.163.com/api/song/lyric?id={歌曲ID}&lv=1&kv=1&tv=-1
         req = n_api.api_netease_url + ""
         songs
     except Exception: pass
@@ -289,7 +288,8 @@ def start_input():
                             try:
                                 for i in range(0, len(tmp)):
                                     song = n_api.songs[int(tmp[i]) - 1]["id"].__str__()
-                                    downloader(song)
+                                    if not os.path.exists(n_api.temp_loca + "/.temp" + song + ".mp3"):
+                                        downloader(song)
                                     resources_player.queue(pyglet.media.load(n_api.temp_loca + "/.temp" + song + ".mp3"))
                                 print("% next posted")
                             except Exception:
