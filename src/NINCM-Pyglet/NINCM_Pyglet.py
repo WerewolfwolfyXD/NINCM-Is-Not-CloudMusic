@@ -1,4 +1,5 @@
 import os
+import sys
 import threading
 import time
 import json
@@ -15,9 +16,7 @@ pyglet.options['search_local_libs'] = True
 def timeStampMS(timenum):
     return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(float(timenum / 1000)))
 
-
 resources_player = pyglet.media.Player()
-
 
 class n_api:
     temp_loca = os.getcwd() + "/"
@@ -192,7 +191,6 @@ def start_input():
                         if "songs" == var_t[1] or "song" == var_t[1] or "sng" == var_t[1]:
                             n_api.api_songsearch = json.loads(searcher(aa(var_t), "song"))
                             n_api.songs = n_api.api_songsearch["result"]["songs"]
-                            # n_api.api_songsearch = json.loads(open('shit.json', 'r').read())
                         if "albums" == var_t[1] or "album" == var_t[1] or "abm" == var_t[1]:
                             n_api.api_songsearch = json.loads(searcher(aa(var_t), "album"))
                             print(searcher(aa(var_t), "album"))
@@ -216,19 +214,21 @@ def start_input():
                             print(n_api.api_songsearch)
 
                         if "list" == var_t[1]:
-                            if len(var_t) > 2:
-                                if "o" == var_t[2] or "original" == var_t[2]:
-                                    print(n_api.api_songsearch["result"])
-                            else:
-                                songs = n_api.api_songsearch["result"]["songs"]
-                                for name in range(0, len(songs)):
-                                    songs_author = ""
-                                    for j in range(0, len(songs[name]["artists"])):
-                                        songs_author += songs[name]["artists"][j]["name"].__str__() + " & "
-                                    print((name + 1).__str__() + (5 - len(name.__str__())) * " " + "| " + songs[name][
-                                        "name"].__str__() + " | " + songs_author.__str__()[:-2] + " 《" +
-                                          songs[name]["album"]["name"].__str__() + "》 " + songs[name][
-                                              "duration"].__str__())
+                            try:
+                                if len(var_t) > 2:
+                                    if "o" == var_t[2] or "original" == var_t[2]:
+                                        print(n_api.api_songsearch["result"])
+                                else:
+                                    songs = n_api.api_songsearch["result"]["songs"]
+                                    for name in range(0, len(songs)):
+                                        songs_author = ""
+                                        for j in range(0, len(songs[name]["artists"])):
+                                            songs_author += songs[name]["artists"][j]["name"].__str__() + " & "
+                                        print((name + 1).__str__() + (5 - len(name.__str__())) * " " + "| " + songs[name][
+                                            "name"].__str__() + " | " + songs_author.__str__()[:-2] + " 《" +
+                                              songs[name]["album"]["name"].__str__() + "》 " + songs[name][
+                                                  "duration"].__str__())
+                            except Exception: print("获取列表失败")
                     if ":proxy" in var_t:
                         if "set" == var_t[1]:
                             if not None == var_t[2] or not "" == var_t[2]:
@@ -294,8 +294,36 @@ def start_input():
                                 print("% next posted")
                             except Exception:
                                 print("ERROR: \ntmp:" + tmp.__str__() + "\nvar_t:" + var_t.__str__())
+                    if ":getting" in var_t:
+                        tdml.start()
+                    if ":as" in var_t:
+                        print("max_distance: "+resources_player.max_distance.__str__())
+                        print("source: "+resources_player.source.__str__())
+                        print("time_real: "+resources_player.time.real.__str__())
+                        print("time_imag: "+resources_player.time.imag.__str__())
+                        print("position: "+resources_player.position.__str__())
+                        print("cone_orientation: "+resources_player.cone_orientation.__str__())
+                        print("outer_angle: " + resources_player.cone_outer_angle.__str__())
+                        print("min_distance: "+resources_player.min_distance.__str__())
+                        print("Texture: " + resources_player.texture.__str__())
+                        print("Numerator: " + resources_player.playing.numerator.__str__())
+                        print("Denominator: " + resources_player.playing.denominator.__str__())
+                        print("Real: " + resources_player.playing.real.__str__())
+                        print("Conjugate: " + resources_player.time.conjugate().__str__())
+                        print("duration_getter:" + pyglet.media.Source.duration.getter.__str__())
+                        print("duration_fget:" + pyglet.media.Source.duration.fget.__str__())
+                        print("event_type:" + resources_player.event_types.__str__())
+                        print("loop:" + resources_player.loop.__str__())
+                        print("cone_outer_gain:" + resources_player.cone_outer_gain.__str__())
+                        print("cone_inner_gain:" + resources_player.cone_inner_angle.__str__())
+                        print("_timer_gettime:" + resources_player._timer.get_time().__str__())
+                        # print("duration: "+librosa)
                 break
 
+def tdml():
+    for i in range(0, int(resources_player._timer.get_time())):
+        print(i)
+        sys.stdout.flush()
 
 def waitfor():
     while 1:
@@ -307,6 +335,7 @@ def waitfor():
 
 if __name__ == "__main__":
     try:
+        tdml = threading.Thread(target=tdml)
         aaff = threading.Thread(target=waitfor)
         aaff.start()
         pyglet.app.run()
