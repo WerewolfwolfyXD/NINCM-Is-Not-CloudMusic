@@ -16,11 +16,13 @@ pyglet.options['search_local_libs'] = True
 def timeStampMS(timenum):
     return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(float(timenum / 1000)))
 
+
 resources_player = pyglet.media.Player()
+
 
 class n_api:
     temp_loca = os.getcwd() + "/"
-    api_url = "http://cloud-music.pl-fe.cn/" # 不敢用第三方API力qwq
+    api_url = "http://cloud-music.pl-fe.cn/"  # 不敢用第三方API力qwq
     api_netease_url = "http://music.163.com/api/"
     wyy_headframe = "http://p1.music.126.net/_f_ggnXfNN-PndOZnahjng==/"
     wyy_outer = "http://music.163.com/song/media/outer/url?id={}.mp3"
@@ -52,6 +54,7 @@ def release_temp():
     except Exception:
         pass
 
+
 def searcher(s_name, s_type):
     if s_type == "song":
         # apihead = n_api.api_url + "search?keywords="
@@ -75,6 +78,7 @@ def searcher(s_name, s_type):
         print("错误的搜索类型")
     req = requests.get(url=var, headers=n_api.headers)
     return req.text.__str__()
+
 
 def send_n_back(URL):
     return requests.get(url=URL, headers=n_api.headers).text.__str__()
@@ -130,25 +134,43 @@ def getsong_info(songs):
             "id"].__str__() + "%5D"
         songinfo_j = json.loads(send_n_back(req))["songs"][0]
         print("Disc: " + songinfo_j["disc"].__str__() + " | No. " + songinfo_j["no"].__str__())
-        print("星标音乐: " + songinfo_j["starred"].__str__() + " | 热门度: " + songinfo_j["popularity"].__str__()[:-2].join("%") + " | 分数(和热门度差不了多少意思): " + songinfo_j["score"].__str__())
-        print("星标数量: " + songinfo_j["starredNum"].__str__() + " | 播放次数: " + songinfo_j["playedNum"].__str__() + " | 日播放次数: " + songinfo_j["dayPlays"].__str__() + " | 播放时长: " +songinfo_j["hearTime"].__str__())
-        print("歌曲译名: " + songinfo_j["transName"].__str__() + " | 歌曲别名: " + songinfo_j["alias"].__str__().replace("[]", "无"))
+        print("星标音乐: " + songinfo_j["starred"].__str__() + " | 热门度: " + songinfo_j["popularity"].__str__()[
+                                                                               :-2] + "%" + " | 分数(和热门度差不了多少意思): " +
+              songinfo_j["score"].__str__())
+        print("星标数量: " + songinfo_j["starredNum"].__str__() + " | 播放次数: " + songinfo_j[
+            "playedNum"].__str__() + " | 日播放次数: " + songinfo_j["dayPlays"].__str__() + " | 播放时长: " +
+              songinfo_j["hearTime"].__str__())
+        print(
+            "歌曲译名: " + songinfo_j["transName"].__str__() + " | 歌曲别名: " + songinfo_j["alias"].__str__().replace(
+                "[]", "无") + " | 歌曲长度: " + int(songs["duration"] / 1000).__str__() + " (" + songs[
+                "duration"].__str__() + ")")
         for artists in range(0, len(songs["artists"])):
             artist_ = songs["artists"][artists]
-            print("参演艺术家 (" + (artists + 1).__str__() + ") : " + artist_["name"].__str__() + " | ID: " + artist_["id"].__str__() + " | 个人头像: " + artist_["img1v1Url"] + " | 粉丝团: " + artist_["fansGroup"].__str__().replace("None","无") + " | 歌手别名: " + artist_["alias"].__str__().replace("[]", "无"))
+            print("参演艺术家 (" + (artists + 1).__str__() + ") : " + artist_["name"].__str__() + " | ID: " + artist_[
+                "id"].__str__() + " | 个人头像: " + artist_["img1v1Url"] + " | 粉丝团: " + artist_[
+                      "fansGroup"].__str__().replace("None", "无") + " | 歌手别名: " + artist_[
+                      "alias"].__str__().replace("[]", "无"))
         album__ = songinfo_j["album"]
         album_ = songs["album"]
-        print("歌曲专辑: " + album_["name"] + " | 专辑ID: " + album_["id"].__str__() + " | 发行时间: " + timeStampMS(album_["publishTime"]).__str__())
-        print("专辑图片: " + album__["picUrl"].__str__() + " | 专辑类型: " + album__["type"] + " | 发行公司/厂牌: " +album__["company"].__str__().replace("None", "无") + " (" + album__["companyId"].__str__() + ")")
-        print("专辑类型: " + album__["subType"].__str__() + " | 是否售卖(打折): " + album__["onSale"].__str__().replace("False", "否").replace("True", "是") + " | 杜比音频: " + album__["dolbyMark"].__str__().replace("0","不支持").replace("1", "支持"))
+        print("歌曲专辑: " + album_["name"] + " | 专辑ID: " + album_["id"].__str__() + " | 发行时间: " + timeStampMS(
+            album_["publishTime"]).__str__())
+        print("专辑图片: " + album__["picUrl"].__str__() + " | 专辑类型: " + album__["type"] + " | 发行公司/厂牌: " +
+              album__["company"].__str__().replace("None", "无") + " (" + album__["companyId"].__str__() + ")")
+        print("专辑类型: " + album__["subType"].__str__() + " | 是否售卖(打折): " + album__["onSale"].__str__().replace(
+            "False", "否").replace("True", "是") + " | 杜比音频: " + album__["dolbyMark"].__str__().replace("0",
+                                                                                                            "不支持").replace(
+            "1", "支持"))
     except Exception:
         print("获取详情信息失败")
+
 
 def lyrisFormater(songs):
     try:
         req = n_api.api_netease_url + ""
         songs
-    except Exception: pass
+    except Exception:
+        pass
+
 
 def aa(var_t):
     whatisearched = ""
@@ -158,6 +180,7 @@ def aa(var_t):
     else:
         whatisearched = var_t[1]
     return whatisearched
+
 
 def start_input():
     while 1:
@@ -209,7 +232,8 @@ def start_input():
                         if "lyrics" == var_t[1] or "lyric" == var_t[1] or "lyc" == var_t[1]:
                             n_api.api_songsearch = json.loads(searcher(aa(var_t), "lyric"))
                             print(n_api.api_songsearch)
-                        if "djradios" == var_t[1] or "djradio" == var_t[1] or "rdo" == var_t[1] or "radio" == var_t[1] or "radios" == var_t[1]:
+                        if "djradios" == var_t[1] or "djradio" == var_t[1] or "rdo" == var_t[1] or "radio" == var_t[
+                            1] or "radios" == var_t[1]:
                             n_api.api_songsearch = json.loads(searcher(aa(var_t), "djradio"))
                             print(n_api.api_songsearch)
 
@@ -224,11 +248,13 @@ def start_input():
                                         songs_author = ""
                                         for j in range(0, len(songs[name]["artists"])):
                                             songs_author += songs[name]["artists"][j]["name"].__str__() + " & "
-                                        print((name + 1).__str__() + (5 - len(name.__str__())) * " " + "| " + songs[name][
-                                            "name"].__str__() + " | " + songs_author.__str__()[:-2] + " 《" +
-                                              songs[name]["album"]["name"].__str__() + "》 " + songs[name][
-                                                  "duration"].__str__())
-                            except Exception: print("获取列表失败")
+                                        print(
+                                            (name + 1).__str__() + (5 - len(name.__str__())) * " " + "| " + songs[name][
+                                                "name"].__str__() + " | " + songs_author.__str__()[:-2] + " 《" +
+                                            songs[name]["album"]["name"].__str__() + "》 " + songs[name][
+                                                "duration"].__str__())
+                            except Exception:
+                                print("获取列表失败")
                     if ":proxy" in var_t:
                         if "set" == var_t[1]:
                             if not None == var_t[2] or not "" == var_t[2]:
@@ -290,21 +316,22 @@ def start_input():
                                     song = n_api.songs[int(tmp[i]) - 1]["id"].__str__()
                                     if not os.path.exists(n_api.temp_loca + "/.temp" + song + ".mp3"):
                                         downloader(song)
-                                    resources_player.queue(pyglet.media.load(n_api.temp_loca + "/.temp" + song + ".mp3"))
+                                    resources_player.queue(
+                                        pyglet.media.load(n_api.temp_loca + "/.temp" + song + ".mp3"))
                                 print("% next posted")
                             except Exception:
                                 print("ERROR: \ntmp:" + tmp.__str__() + "\nvar_t:" + var_t.__str__())
-                    if ":getting" in var_t:
+                    if ":progress" in var_t:
                         tdml.start()
                     if ":as" in var_t:
-                        print("max_distance: "+resources_player.max_distance.__str__())
-                        print("source: "+resources_player.source.__str__())
-                        print("time_real: "+resources_player.time.real.__str__())
-                        print("time_imag: "+resources_player.time.imag.__str__())
-                        print("position: "+resources_player.position.__str__())
-                        print("cone_orientation: "+resources_player.cone_orientation.__str__())
+                        print("max_distance: " + resources_player.max_distance.__str__())
+                        print("source: " + resources_player.source.__str__())
+                        print("time_real: " + resources_player.time.real.__str__())
+                        print("time_imag: " + resources_player.time.imag.__str__())
+                        print("position: " + resources_player.position.__str__())
+                        print("cone_orientation: " + resources_player.cone_orientation.__str__())
                         print("outer_angle: " + resources_player.cone_outer_angle.__str__())
-                        print("min_distance: "+resources_player.min_distance.__str__())
+                        print("min_distance: " + resources_player.min_distance.__str__())
                         print("Texture: " + resources_player.texture.__str__())
                         print("Numerator: " + resources_player.playing.numerator.__str__())
                         print("Denominator: " + resources_player.playing.denominator.__str__())
@@ -318,12 +345,18 @@ def start_input():
                         print("cone_inner_gain:" + resources_player.cone_inner_angle.__str__())
                         print("_timer_gettime:" + resources_player._timer.get_time().__str__())
                         # print("duration: "+librosa)
+
                 break
 
-def tdml():
-    for i in range(0, int(resources_player._timer.get_time())):
-        print(i)
+def progress_bar():
+    b = int(int(int(n_api.playing_song_j["duration"]) / 1000) / 40)
+    a = int(int(resources_player.time) / 40)
+    for i in range(a, b):
+        print("\r", end="")
+        print("Playing "+n_api.playing_song_j["name"].__str__()+": {}%: ".format(i), "▋" * (i // 2), end="")
         sys.stdout.flush()
+        time.sleep(1)
+
 
 def waitfor():
     while 1:
@@ -335,7 +368,8 @@ def waitfor():
 
 if __name__ == "__main__":
     try:
-        tdml = threading.Thread(target=tdml)
+        # tdml = threading.Thread(target=tdml)
+        tdml = threading.Thread(target=progress_bar)
         aaff = threading.Thread(target=waitfor)
         aaff.start()
         pyglet.app.run()
