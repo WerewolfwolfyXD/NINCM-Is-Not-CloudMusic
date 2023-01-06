@@ -211,7 +211,7 @@ def start_input():
                     if ":quit" in var_t:
                         raise SystemExit
                     if ":search" in var_t:
-                        if "songs" == var_t[1] or "song" == var_t[1] or "sng" == var_t[1]:
+                        if "songs" == var_t[1] or "song" == var_t[1] or "sng" == var_t[1] or "byname" == var_t[1]:
                             n_api.api_songsearch = json.loads(searcher(aa(var_t), "song"))
                             n_api.songs = n_api.api_songsearch["result"]["songs"]
                         if "albums" == var_t[1] or "album" == var_t[1] or "abm" == var_t[1]:
