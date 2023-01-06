@@ -288,7 +288,7 @@ def start_input():
                             try:
                                 for i in range(0, len(tmp)):
                                     song = n_api.songs[int(tmp[i]) - 1]["id"].__str__()
-                                    if not os.path.exists(n_api.temp_loca + "/.temp" + songid + ".mp3"):
+                                    if not os.path.exists(n_api.temp_loca + "/.temp" + song + ".mp3"):
                                         downloader(song)
                                     resources_player.queue(pyglet.media.load(n_api.temp_loca + "/.temp" + song + ".mp3"))
                                 print("% next posted")
