@@ -27,8 +27,7 @@ class n_api:
     wyy_headframe = "http://p1.music.126.net/_f_ggnXfNN-PndOZnahjng==/"
     wyy_outer = "http://music.163.com/song/media/outer/url?id={}.mp3"
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36",
-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:50.0) Gecko/20100101 Firefox/50.0"
+        "User-Agent": ["Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:50.0) Gecko/20100101 Firefox/50.0"]
     }
     api_songsearch = ""
     playing_song_j = None
@@ -323,7 +322,7 @@ def start_input():
                                 print("ERROR: \ntmp:" + tmp.__str__() + "\nvar_t:" + var_t.__str__())
                     if ":progress" in var_t:
                         tdml.start()
-                    if ":as" in var_t:
+                    if ":player_information" in var_t:
                         print("max_distance: " + resources_player.max_distance.__str__())
                         print("source: " + resources_player.source.__str__())
                         print("time_real: " + resources_player.time.real.__str__())
@@ -344,13 +343,11 @@ def start_input():
                         print("cone_outer_gain:" + resources_player.cone_outer_gain.__str__())
                         print("cone_inner_gain:" + resources_player.cone_inner_angle.__str__())
                         print("_timer_gettime:" + resources_player._timer.get_time().__str__())
-                        # print("duration: "+librosa)
-
                 break
 
 def progress_bar():
-    b = int(int(int(n_api.playing_song_j["duration"]) / 1000) / 40)
-    a = int(int(resources_player.time) / 40)
+    b = int(int(int(n_api.playing_song_j["duration"]) / 1000))
+    a = int(int(resources_player.time))
     for i in range(a, b):
         print("\r", end="")
         print("Playing "+n_api.playing_song_j["name"].__str__()+": {}%: ".format(i), "▋" * (i // 2), end="")
@@ -368,7 +365,6 @@ def waitfor():
 
 if __name__ == "__main__":
     try:
-        # tdml = threading.Thread(target=tdml)
         tdml = threading.Thread(target=progress_bar)
         aaff = threading.Thread(target=waitfor)
         aaff.start()
