@@ -30,11 +30,11 @@ class n_api:
         "User-Agent": ["Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:50.0) Gecko/20100101 Firefox/50.0"]
     }
     api_songsearch = ""
+    playing_song_lyc = ""
     playing_song_j = None
     songs = {}
     autorelease = True
     music_obj = None
-
     class isloop:
         a = 0
         b = 1
@@ -92,6 +92,10 @@ def downloader(songid):
     except Exception:
         pass
 
+def requester(url):
+    try:
+        return requests.get(url).content
+    except Exception: return "获取失败"
 
 def player_play():
     try:
@@ -162,13 +166,35 @@ def getsong_info(songs):
     except Exception:
         print("获取详情信息失败")
 
+class lycicer:
+    def lyricer(songs):
+        try:
+            n_api.playing_song_lyc = json.loads(requester(n_api.api_netease_url + "song/lyric?id="+songs+"&lv=1&kv=1&tv=-1"))["lyric"]
+            return n_api.playing_song_lyc
+        except Exception:
+            pass
+    def lyricsFormater(song):
+        try:
+            n_api.playing_song_lyc = song.split("\n")
 
-def lyrisFormater(songs):
-    try:
-        req = n_api.api_netease_url + ""
-        songs
-    except Exception:
-        pass
+        except Exception: pass
+
+    def emplycer(self):
+        k = json.loads(open("load.json", "r", encoding="utf-8").read())["lrc"]["lyric"]
+        l = k.__str__().split("\n")
+        print("歌词长度:{}".format(len(l)))
+        print("最后一句歌词: {lyc} 的长度: {leng}".format(lyc=l[len(l)-2], leng=l[len(l)-2].__str__()[:11]))
+
+
+        lenght = l[len(l) - 2].__str__()[:11].replace("[", "").replace("]", "").replace(".", ":").split(':')
+        al_len_sec = float(lenght[0]) * 60 + float(lenght[1]) + (float(lenght[2]) / 1000)
+        print("ALL LENGHT: {}, LENGHT: {}".format(al_len_sec, lenght))
+        def FormatTime():
+
+            for i in range(0, len(l)):
+                l[i]
+        print(l)
+
 
 
 def aa(var_t):
@@ -343,6 +369,10 @@ def start_input():
                         print("cone_outer_gain:" + resources_player.cone_outer_gain.__str__())
                         print("cone_inner_gain:" + resources_player.cone_inner_angle.__str__())
                         print("_timer_gettime:" + resources_player._timer.get_time().__str__())
+                    if ":lyc" in var_t or ":lyric" in var_t:
+                        lycicer.lyricsFormater(lycicer.lyricer(n_api.playing_song_j["id"].__str__()))
+                    if ":test" in var_t:
+                        lycicer.lyricsFormater(lycicer.emplycer(""))
                 break
 
 def progress_bar():
