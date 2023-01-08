@@ -27,14 +27,17 @@ class n_api:
     wyy_headframe = "http://p1.music.126.net/_f_ggnXfNN-PndOZnahjng==/"
     wyy_outer = "http://music.163.com/song/media/outer/url?id={}.mp3"
     headers = {
-        "User-Agent": ["Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:50.0) Gecko/20100101 Firefox/50.0"]
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36",
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:50.0) Gecko/20100101 Firefox/50.0"
     }
     api_songsearch = ""
     playing_song_lyc = ""
+    playing_song_lyc_jsn = {}
     playing_song_j = None
     songs = {}
     autorelease = True
     music_obj = None
+
     class isloop:
         a = 0
         b = 1
@@ -92,10 +95,13 @@ def downloader(songid):
     except Exception:
         pass
 
+
 def requester(url):
     try:
         return requests.get(url).content
-    except Exception: return "获取失败"
+    except Exception:
+        return "获取失败"
+
 
 def player_play():
     try:
@@ -166,36 +172,26 @@ def getsong_info(songs):
     except Exception:
         print("获取详情信息失败")
 
+
 class lycicer:
     def lyricer(songs):
         try:
-            n_api.playing_song_lyc = json.loads(requester(n_api.api_netease_url + "song/lyric?id="+songs+"&lv=1&kv=1&tv=-1"))["lyric"]
+            n_api.playing_song_lyc = json.loads(requester(n_api.api_netease_url + "song/lyric?id=" + songs.__str__() + "&lv=1&kv=1&tv=-1"))["lrc"]["lyric"]
+            # n_api.playing_song_lyc = json.loads(open("load.json", "r").read())
             return n_api.playing_song_lyc
-        except Exception:
-            pass
-    def lyricsFormater(song):
+        except Exception: return "ERROR"
+
+    def lyricsFormater(songgg):
         try:
-            n_api.playing_song_lyc = song.split("\n")
-
-        except Exception: pass
-
-    def emplycer(self):
-        k = json.loads(open("load.json", "r", encoding="utf-8").read())["lrc"]["lyric"]
-        l = k.__str__().split("\n")
-        print("歌词长度:{}".format(len(l)))
-        print("最后一句歌词: {lyc} 的长度: {leng}".format(lyc=l[len(l)-2], leng=l[len(l)-2].__str__()[:11]))
-
-
-        lenght = l[len(l) - 2].__str__()[:11].replace("[", "").replace("]", "").replace(".", ":").split(':')
-        al_len_sec = float(lenght[0]) * 60 + float(lenght[1]) + (float(lenght[2]) / 1000)
-        print("ALL LENGHT: {}, LENGHT: {}".format(al_len_sec, lenght))
-        def FormatTime():
-
-            for i in range(0, len(l)):
-                l[i]
-        print(l)
-
-
+            a = songgg.split("\n")
+            al_len_lst = {}
+            for i in range(0, len(a) - 1):
+                lenghtt = a[i].__str__()[:11].replace("[", "").replace("]", "").replace(".", ":").split(':')
+                al_len_secc = float(lenghtt[0]) * 60 + float(lenghtt[1]) # + (float(lenghtt[2]) / 1000)
+                al_len_lst[al_len_secc] = a[i][11:]
+            n_api.playing_song_lyc_jsn = al_len_lst
+            return al_len_lst
+        except Exception: return "ERROR"
 
 def aa(var_t):
     whatisearched = ""
@@ -370,17 +366,30 @@ def start_input():
                         print("cone_inner_gain:" + resources_player.cone_inner_angle.__str__())
                         print("_timer_gettime:" + resources_player._timer.get_time().__str__())
                     if ":lyc" in var_t or ":lyric" in var_t:
-                        lycicer.lyricsFormater(lycicer.lyricer(n_api.playing_song_j["id"].__str__()))
+                        try:
+                            ab = lycicer.lyricsFormater(lycicer.lyricer(n_api.playing_song_j["id"]))
+                            print("歌词系统加载完毕: {songname}".format(songname=n_api.playing_song_j["name"]))
+                            while 1:
+                                try:
+                                    if int(resources_player.time) in ab:
+                                        print("\r", end="")
+                                        print(ab[int(resources_player.time)], end="")
+                                except Exception: pass
+                                time.sleep(0.5)
+                                sys.stdout.flush()
+
+                        except Exception: pass
                     if ":test" in var_t:
-                        lycicer.lyricsFormater(lycicer.emplycer(""))
+                        pass
                 break
+
 
 def progress_bar():
     b = int(int(int(n_api.playing_song_j["duration"]) / 1000))
     a = int(int(resources_player.time))
     for i in range(a, b):
         print("\r", end="")
-        print("Playing "+n_api.playing_song_j["name"].__str__()+": {}%: ".format(i), "▋" * (i // 2), end="")
+        print("Playing " + n_api.playing_song_j["name"].__str__() + ": {}%: ".format(i), "▋" * (i // 2), end="")
         sys.stdout.flush()
         time.sleep(1)
 
