@@ -172,7 +172,6 @@ def getsong_info(songs):
     except Exception:
         print("获取详情信息失败")
 
-
 class lycicer:
     def lyricer(songs):
         try:
