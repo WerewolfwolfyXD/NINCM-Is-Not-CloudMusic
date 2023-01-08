@@ -368,7 +368,6 @@ def start_input():
                     if ":lyc" in var_t or ":lyric" in var_t:
                         try:
                             ab = lycicer.lyricsFormater(lycicer.lyricer(n_api.playing_song_j["id"]))
-                            print("歌词系统加载完毕: {songname}".format(songname=n_api.playing_song_j["name"]))
                             while 1:
                                 try:
                                     if int(resources_player.time) in ab:
