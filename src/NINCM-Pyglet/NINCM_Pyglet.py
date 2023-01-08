@@ -366,21 +366,26 @@ def start_input():
                         print("_timer_gettime:" + resources_player._timer.get_time().__str__())
                     if ":lyc" in var_t or ":lyric" in var_t:
                         try:
-                            ab = lycicer.lyricsFormater(lycicer.lyricer(n_api.playing_song_j["id"]))
-                            while 1:
-                                try:
-                                    if int(resources_player.time) in ab:
-                                        print("\r", end="")
-                                        print(ab[int(resources_player.time)], end="")
-                                except Exception: pass
-                                time.sleep(0.5)
-                                sys.stdout.flush()
-
-                        except Exception: pass
+                            lycc.start()
+                        except Exception: lyc_lyc()
                     if ":test" in var_t:
                         pass
                 break
 
+def lyc_lyc():
+    try:
+        ab = lycicer.lyricsFormater(lycicer.lyricer(n_api.playing_song_j["id"]))
+        while 1:
+            try:
+                if int(resources_player.time) in ab:
+                    print("\r", end="")
+                    print(ab[int(resources_player.time)], end="")
+            except Exception:
+                pass
+            time.sleep(0.5)
+            sys.stdout.flush()
+    except Exception:
+        pass
 
 def progress_bar():
     b = int(int(int(n_api.playing_song_j["duration"]) / 1000))
@@ -402,6 +407,7 @@ def waitfor():
 
 if __name__ == "__main__":
     try:
+        lycc = threading.Thread(target=lyc_lyc)
         tdml = threading.Thread(target=progress_bar)
         aaff = threading.Thread(target=waitfor)
         aaff.start()
