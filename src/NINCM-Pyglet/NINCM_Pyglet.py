@@ -19,7 +19,6 @@ def timeStampMS(timenum):
 
 resources_player = pyglet.media.Player()
 
-
 class n_api:
     temp_loca = os.getcwd() + "/"
     api_url = "http://cloud-music.pl-fe.cn/"  # 不敢用第三方API力qwq
@@ -33,7 +32,17 @@ class n_api:
     api_songsearch = ""
     playing_song_lyc = ""
     playing_song_lyc_jsn = {}
+    playing_song_lyc_jsn_len = 0
     playing_song_j = None
+    playing_song_lyc_canplay = False
+    playing_song_lyc_jsn_len_maxlen = None
+    playing_song_lyc_mx = None
+    class playing_song_lyc_jsn_len_maxlen_cls:
+        def getter(self):
+            return n_api.playing_song_lyc_jsn_len_maxlen
+        def setter(self, a):
+            n_api.playing_song_lyc_jsn_len_maxlen = a
+            return n_api.playing_song_lyc_jsn_len_maxlen
     songs = {}
     autorelease = True
     music_obj = None
@@ -105,6 +114,7 @@ def requester(url):
 
 def player_play():
     try:
+        n_api.playing_song_lyc_canplay = True
         songid = n_api.playing_song_j["id"].__str__()
         if not os.path.exists(n_api.temp_loca + "/.temp" + songid + ".mp3"):
             downloader(songid)
@@ -115,13 +125,16 @@ def player_play():
             resources_player.play()
     except Exception:
         print("资源加载错误或者事付费曲")
+        n_api.playing_song_lyc_canplay = False
 
 
 def player_resume():
     try:
+        n_api.playing_song_lyc_canplay = True
         resources_player.play()
     except Exception:
         print("ERROR")
+        n_api.playing_song_lyc_canplay = False
 
 
 def player_stop():
@@ -174,6 +187,7 @@ def getsong_info(songs):
 
 class lycicer:
     def lyricer(songs):
+        n_api.playing_song_lyc = None
         try:
             n_api.playing_song_lyc = json.loads(requester(n_api.api_netease_url + "song/lyric?id=" + songs.__str__() + "&lv=1&kv=1&tv=-1"))["lrc"]["lyric"]
             # n_api.playing_song_lyc = json.loads(open("load.json", "r").read())
@@ -181,13 +195,23 @@ class lycicer:
         except Exception: return "ERROR"
 
     def lyricsFormater(songgg):
+        n_api.playing_song_lyc_jsn = None
+        n_api.playing_song_lyc_jsn_len = None
+        n_api.playing_song_lyc_jsn_len_maxlen = None
         try:
             a = songgg.split("\n")
+            n_api.playing_song_lyc_jsn_len = len(a)
             al_len_lst = {}
             for i in range(0, len(a) - 1):
                 lenghtt = a[i].__str__()[:11].replace("[", "").replace("]", "").replace(".", ":").split(':')
                 al_len_secc = float(lenghtt[0]) * 60 + float(lenghtt[1]) # + (float(lenghtt[2]) / 1000)
-                al_len_lst[al_len_secc] = a[i][11:]
+                if i == len(a)-2:
+                    n_api.playing_song_lyc_jsn_len_maxlen_cls.setter("aa", str(al_len_secc))
+                    n_api.playing_song_lyc_mx = al_len_secc
+
+                #al_len_lst[al_len_secc] = a[i][11:]
+                # 死亡做法，创建了挺多的list，很烧啊，但是避免了误删的问题
+                al_len_lst[al_len_secc] = a[i].split("]")[1].__str__()
             n_api.playing_song_lyc_jsn = al_len_lst
             return al_len_lst
         except Exception: return "ERROR"
@@ -365,21 +389,28 @@ def start_input():
                         print("cone_inner_gain:" + resources_player.cone_inner_angle.__str__())
                         print("_timer_gettime:" + resources_player._timer.get_time().__str__())
                     if ":lyc" in var_t or ":lyric" in var_t:
-                        try:
-                            lycc.start()
-                        except Exception: lyc_lyc()
+                        if n_api.playing_song_lyc_canplay == True:
+                            try:
+                                lycc.start()
+                            except Exception: lyc_lyc()
+                        else: print("歌曲无法加载，为了播放安全性，拒绝加载歌词")
                     if ":test" in var_t:
-                        pass
+                        print(n_api.playing_song_lyc_mx)
                 break
-
 def lyc_lyc():
+
     try:
         ab = lycicer.lyricsFormater(lycicer.lyricer(n_api.playing_song_j["id"]))
         while 1:
+        # for i in range(0, sys.maxsize):
             try:
+                ac = ab[int(resources_player.time)]
                 if int(resources_player.time) in ab:
                     print("\r", end="")
-                    print(ab[int(resources_player.time)], end="")
+                    print(ac, end="")
+                # if i / 3 >= float(n_api.playing_song_lyc_mx):
+                #     print("", end="\n")
+                #     break
             except Exception:
                 pass
             time.sleep(0.5)
