@@ -5,6 +5,7 @@ import time
 import json
 import pyglet
 import requests
+from reprint import output
 
 # 别问，实在太害怕代码档掉采用的这么多try except QWQ
 
@@ -37,6 +38,7 @@ class n_api:
     playing_song_lyc_canplay = False
     playing_song_lyc_jsn_len_maxlen = None
     playing_song_lyc_mx = None
+    playing_song_lyc_list = []
     class playing_song_lyc_jsn_len_maxlen_cls:
         def getter(self):
             return n_api.playing_song_lyc_jsn_len_maxlen
@@ -198,11 +200,13 @@ class lycicer:
         n_api.playing_song_lyc_jsn = None
         n_api.playing_song_lyc_jsn_len = None
         n_api.playing_song_lyc_jsn_len_maxlen = None
+        n_api.playing_song_lyc_list = []
         try:
             a = songgg.split("\n")
             n_api.playing_song_lyc_jsn_len = len(a)
             al_len_lst = {}
             for i in range(0, len(a) - 1):
+                n_api.playing_song_lyc_list.append(a[i].split("]")[1].__str__())
                 lenghtt = a[i].__str__()[:11].replace("[", "").replace("]", "").replace(".", ":").split(':')
                 al_len_secc = float(lenghtt[0]) * 60 + float(lenghtt[1]) # + (float(lenghtt[2]) / 1000)
                 if i == len(a)-2:
@@ -394,6 +398,12 @@ def start_input():
                                 lycc.start()
                             except Exception: lyc_lyc()
                         else: print("歌曲无法加载，为了播放安全性，拒绝加载歌词")
+                    if ":lyc3" in var_t or ":lyric3" in var_t:
+                        if n_api.playing_song_lyc_canplay == True:
+                            try:
+                                lycc_threeLine.start()
+                            except Exception: lyc_lyc_threeLine()
+                        else: print("歌曲无法加载，为了播放安全性，拒绝加载歌词")
                     if ":test" in var_t:
                         print(n_api.playing_song_lyc_mx)
                 break
@@ -408,6 +418,31 @@ def lyc_lyc():
                 if int(resources_player.time) in ab:
                     print("\r", end="")
                     print(ac, end="")
+                # if i / 3 >= float(n_api.playing_song_lyc_mx):
+                #     print("", end="\n")
+                #     break
+            except Exception:
+                pass
+            time.sleep(0.5)
+            sys.stdout.flush()
+    except Exception:
+        pass
+
+
+def lyc_lyc_threeLine():
+
+    try:
+        ab = lycicer.lyricsFormater(lycicer.lyricer(n_api.playing_song_j["id"]))
+        last_lyc = ""; future_lyc = ""
+        while 1:
+        # for i in range(0, sys.maxsize):
+            try:
+                ac = ab[int(resources_player.time)]
+                if int(resources_player.time) in ab:
+                    print(n_api.playing_song_lyc_list[n_api.playing_song_lyc_list.index(ac) - 1])
+                    print("> "+ac)
+                    print(n_api.playing_song_lyc_list[n_api.playing_song_lyc_list.index(ac) + 1])
+
                 # if i / 3 >= float(n_api.playing_song_lyc_mx):
                 #     print("", end="\n")
                 #     break
@@ -437,8 +472,11 @@ def waitfor():
 
 
 if __name__ == "__main__":
+    # print(lycicer.lyricsFormater(lycicer.lyricer("1385919432")))
+    # print(n_api.playing_song_lyc_list)
     try:
         lycc = threading.Thread(target=lyc_lyc)
+        lycc_threeLine = threading.Thread(target=lyc_lyc_threeLine)
         tdml = threading.Thread(target=progress_bar)
         aaff = threading.Thread(target=waitfor)
         aaff.start()
